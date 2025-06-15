@@ -1,4 +1,4 @@
-<!-- index.html (dengan fix background dinamis dan log debug) -->
+<!-- index.html (popup iklan saat klik pertama) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -158,7 +158,6 @@
   </style>
 </head>
 <body>
-  <script type='text/javascript' src='//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js'></script>
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
@@ -247,12 +246,9 @@
 
     async function setDynamicBackground() {
       try {
-        console.log('Mengambil background dinamis...');
         const res = await fetch('/api/movies');
         const data = await res.json();
         const latest = data.results[0];
-        console.log('Hasil:', latest);
-
         if (latest && latest.backdrop_path) {
           document.body.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
@@ -270,29 +266,24 @@
       }
     }
 
+    function openAdPopup() {
+      const adWindow = window.open(
+        'https://pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js',
+        '_blank',
+        'width=800,height=600'
+      );
+      if (adWindow) adWindow.blur();
+      window.focus();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       fetchMovies();
       setDynamicBackground();
+      document.body.addEventListener('click', function handleClickOnce() {
+        openAdPopup();
+        document.body.removeEventListener('click', handleClickOnce);
+      });
     });
   </script>
-<script>
-  function openAdPopup() {
-    const adWindow = window.open(
-      'https://pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js',
-      '_blank',
-      'width=800,height=600'
-    );
-    if (adWindow) adWindow.blur();
-    window.focus();
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', function onceClick() {
-      openAdPopup();
-      document.body.removeEventListener('click', onceClick); // hanya 1x popup
-    });
-  });
-</script>
-
 </body>
 </html>
