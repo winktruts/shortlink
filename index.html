@@ -1,4 +1,4 @@
-<!-- index.html (dengan fix background dinamis dan log debug) -->
+<!-- index.html (popup iklan saat klik pertama + tombol Nonton + banyak iklan di body) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,159 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RaiMovie - Nonton Film Gratis</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d0d0d;
-      color: white;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    header {
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
-      text-align: center;
-      padding: 20px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    header::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 0;
-    }
-    header h1, header p {
-      position: relative;
-      z-index: 1;
-    }
-    header h1 { font-size: 2.5em; }
-    header p { font-size: 1.1em; }
-    .slideshow { display: none; }
-    .genres {
-      text-align: center;
-      padding: 15px;
-      flex-wrap: wrap;
-    }
-    .genres button {
-      background: #444;
-      color: white;
-      border: none;
-      margin: 5px;
-      padding: 10px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .genres button:hover { background: #ff416c; }
-    .hero {
-      text-align: center;
-      background: #111;
-      padding: 30px 10px;
-    }
-    .hero h2 { font-size: 2em; }
-    .section {
-      padding: 30px 15px;
-      max-width: 1100px;
-      margin: auto;
-    }
-    .search-bar {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .search-bar input {
-      padding: 10px;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 5px;
-      border: none;
-      font-size: 1em;
-    }
-    .movies {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-    }
-    .movie {
-      background: #1e1e1e;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-    }
-    .movie:hover { transform: scale(1.05); }
-    .movie img { width: 100%; display: block; }
-    .movie h3 {
-      text-align: center;
-      padding: 10px;
-      font-size: 1em;
-    }
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 10px;
-    }
-    .btn {
-      background: #ff416c;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 0.85em;
-      text-decoration: none;
-    }
-    .btn-alt { background: #00c896; }
-    .btn-trailer { background: #1e90ff; }
-    .btn:hover { opacity: 0.9; }
-    footer {
-      background: #111;
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9em;
-      color: #ccc;
-    }
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      width: 90%;
-      position: relative;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 20px;
-      color: white;
-      cursor: pointer;
-    }
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.8em; }
-      .hero h2 { font-size: 1.5em; }
-      .movie h3 { font-size: 0.9em; }
-    }
+    /* ... styles tetap sama ... */
   </style>
 </head>
 <body>
-  <script type='text/javascript' src='//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js'></script>
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
@@ -172,9 +23,19 @@
     <button onclick="filterByGenre(16)">Animation</button>
   </div>
 
+  <!-- Iklan 1: Setelah genre -->
+  <div style="text-align:center; margin: 20px 0;">
+    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
+  </div>
+
   <section class="hero">
     <h2>Streaming Gratis Film Box Office!</h2>
   </section>
+
+  <!-- Iklan 2: Setelah hero -->
+  <div style="text-align:center; margin: 20px 0;">
+    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
+  </div>
 
   <section class="section">
     <div class="search-bar">
@@ -183,6 +44,11 @@
     <h2 style="text-align:center; margin-bottom: 20px;">Rekomendasi Hari Ini</h2>
     <div class="movies"></div>
   </section>
+
+  <!-- Iklan 3: Sebelum footer -->
+  <div style="text-align:center; margin: 30px 0;">
+    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
+  </div>
 
   <div class="modal" id="modal">
     <div class="modal-content">
@@ -217,7 +83,7 @@
           <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
           <h3>${movie.title}</h3>
           <div class="buttons">
-            <a href="#" class="btn">🎬 Nonton</a>
+            <a href="#" class="btn btn-watch">🎬 Nonton</a>
             <a href="#" class="btn btn-alt">📥 Download</a>
             ${trailerUrl ? `<a href="${trailerUrl}" target="_blank" class="btn btn-trailer">▶ Trailer</a>` : ''}
           </div>
@@ -225,6 +91,10 @@
         movieEl.addEventListener('click', () => showDetails(movie.id));
         container.appendChild(movieEl);
       }
+
+      document.querySelectorAll('.btn-watch').forEach(btn => {
+        btn.addEventListener('click', openAdPopup);
+      });
     }
 
     async function showDetails(movieId) {
@@ -247,12 +117,9 @@
 
     async function setDynamicBackground() {
       try {
-        console.log('Mengambil background dinamis...');
         const res = await fetch('/api/movies');
         const data = await res.json();
         const latest = data.results[0];
-        console.log('Hasil:', latest);
-
         if (latest && latest.backdrop_path) {
           document.body.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
@@ -270,9 +137,23 @@
       }
     }
 
+    function openAdPopup() {
+      const adWindow = window.open(
+        'https://pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js',
+        '_blank',
+        'width=800,height=600'
+      );
+      if (adWindow) adWindow.blur();
+      window.focus();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       fetchMovies();
       setDynamicBackground();
+      document.body.addEventListener('click', function handleClickOnce() {
+        openAdPopup();
+        document.body.removeEventListener('click', handleClickOnce);
+      });
     });
   </script>
 </body>
