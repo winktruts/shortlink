@@ -1,4 +1,4 @@
-<!-- index.html (dengan iklan overlay transparan) -->
+<!-- index.html (dengan fix background dinamis dan log debug) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,42 +14,6 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      position: relative;
-    }
-    .ad-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .ad-overlay iframe {
-      max-width: 90%;
-      max-height: 90%;
-      border: none;
-    }
-    .ad-close {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      color: white;
-      background: #ff416c;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      z-index: 10000;
-    }
-    .ad-banner {
-      text-align: center;
-      margin: 20px 0;
-      min-height: 90px;
-      overflow: hidden;
     }
     header {
       background: linear-gradient(to right, #ff416c, #ff4b2b);
@@ -194,6 +158,7 @@
   </style>
 </head>
 <body>
+  <script type='text/javascript' src='//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js'></script>
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
@@ -207,17 +172,9 @@
     <button onclick="filterByGenre(16)">Animation</button>
   </div>
 
-  <div class="ad-banner">
-    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
-  </div>
-
   <section class="hero">
     <h2>Streaming Gratis Film Box Office!</h2>
   </section>
-
-  <div class="ad-banner">
-    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
-  </div>
 
   <section class="section">
     <div class="search-bar">
@@ -226,10 +183,6 @@
     <h2 style="text-align:center; margin-bottom: 20px;">Rekomendasi Hari Ini</h2>
     <div class="movies"></div>
   </section>
-
-  <div class="ad-banner">
-    <script type="text/javascript" src="//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js"></script>
-  </div>
 
   <div class="modal" id="modal">
     <div class="modal-content">
@@ -245,17 +198,81 @@
     &copy; 2025 RaiMovie. All Rights Reserved.
   </footer>
 
-  <div id="adOverlay" class="ad-overlay" style="display: none;">
-    <div class="ad-close" onclick="document.getElementById('adOverlay').style.display='none';">Tutup Iklan</div>
-    <iframe src="https://pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.html"></iframe>
-  </div>
-
   <script>
+    const container = document.querySelector('.movies');
+    const searchInput = document.getElementById('searchInput');
+
+    async function fetchMovies(query = '', genre = '') {
+      const url = `/api/movies${query ? `?query=${encodeURIComponent(query)}` : genre ? `?genre=${genre}` : ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      container.innerHTML = '';
+
+      const movies = data.results.slice(0, 12);
+      for (const movie of movies) {
+        const trailerUrl = await fetch(`/api/trailer?id=${movie.id}`).then(r => r.text());
+        const movieEl = document.createElement('div');
+        movieEl.className = 'movie';
+        movieEl.innerHTML = `
+          <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+          <h3>${movie.title}</h3>
+          <div class="buttons">
+            <a href="https://www.profitableratecpm.com/hk68cccn2?key=3afd55eed6781c064cb17069870e7f22" class="btn">🎬 Nonton</a>
+            <a href="#" class="btn btn-alt">📥 Download</a>
+            ${trailerUrl ? `<a href="${trailerUrl}" target="_blank" class="btn btn-trailer">▶ Trailer</a>` : ''}
+          </div>
+        `;
+        movieEl.addEventListener('click', () => showDetails(movie.id));
+        container.appendChild(movieEl);
+      }
+    }
+
+    async function showDetails(movieId) {
+      const res = await fetch(`/api/details?id=${movieId}`);
+      const data = await res.json();
+      document.getElementById('modalTitle').innerText = data.title;
+      document.getElementById('modalOverview').innerText = data.overview;
+      document.getElementById('modalRating').innerText = data.vote_average;
+      document.getElementById('modalGenres').innerText = data.genres.map(g => g.name).join(', ');
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function filterByGenre(id) {
+      fetchMovies('', id);
+    }
+
+    async function setDynamicBackground() {
+      try {
+        console.log('Mengambil background dinamis...');
+        const res = await fetch('/api/movies');
+        const data = await res.json();
+        const latest = data.results[0];
+        console.log('Hasil:', latest);
+
+        if (latest && latest.backdrop_path) {
+          document.body.style.background = `
+            linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
+            url('https://image.tmdb.org/t/p/original${latest.backdrop_path}') no-repeat center center fixed
+          `;
+          document.body.style.backgroundSize = 'cover';
+
+          const header = document.querySelector('header');
+          header.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${latest.backdrop_path}')`;
+          header.style.backgroundSize = 'cover';
+          header.style.backgroundPosition = 'center';
+        }
+      } catch (err) {
+        console.error('Gagal mengambil background dinamis:', err);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const overlay = document.getElementById('adOverlay');
-        if (overlay) overlay.style.display = 'flex';
-      }, 3000);
+      fetchMovies();
+      setDynamicBackground();
     });
   </script>
 </body>
