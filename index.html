@@ -13,30 +13,66 @@
       line-height: 1.6;
     }
     header {
-      padding: 30px 20px;
       text-align: center;
       background: linear-gradient(to right, #ff416c, #ff4b2b);
     }
     header h1 {
       font-size: 2.5em;
-      margin-bottom: 10px;
+      padding: 20px;
     }
     header p {
       font-size: 1.1em;
+      padding-bottom: 10px;
+    }
+    .slideshow {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      height: 300px;
+    }
+    .slides {
+      display: flex;
+      width: 300%;
+      height: 100%;
+      animation: slide 15s infinite;
+    }
+    .slides img {
+      width: 100vw;
+      height: 100%;
+      object-fit: cover;
+    }
+    @keyframes slide {
+      0% { transform: translateX(0%); }
+      33% { transform: translateX(-100%); }
+      66% { transform: translateX(-200%); }
+      100% { transform: translateX(0%); }
+    }
+    .genres {
+      text-align: center;
+      padding: 15px;
+    }
+    .genres button {
+      background: #333;
+      color: white;
+      border: none;
+      margin: 5px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .genres button:hover {
+      background: #ff416c;
     }
     .hero {
-      background: url('https://images.unsplash.com/photo-1606312616780-8fdfa5e43433?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
-      height: 60vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
+      height: 200px;
+      background: #111;
     }
     .hero h2 {
       font-size: 3em;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 20px;
-      border-radius: 10px;
     }
     .section {
       padding: 40px 20px;
@@ -150,7 +186,22 @@
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
+    <div class="slideshow">
+      <div class="slides">
+        <img src="https://image.tmdb.org/t/p/original/8YFL5QQVPy3AgrEQxNYVSgiPEbe.jpg" alt="Slide 1">
+        <img src="https://image.tmdb.org/t/p/original/wgT0TS6Dd4tNA1xFHMgZDfF0iCw.jpg" alt="Slide 2">
+        <img src="https://image.tmdb.org/t/p/original/rSPw7tgCH9c6NqICZef4kZjFOQ5.jpg" alt="Slide 3">
+      </div>
+    </div>
   </header>
+
+  <div class="genres">
+    <button onclick="filterByGenre(28)">Action</button>
+    <button onclick="filterByGenre(35)">Comedy</button>
+    <button onclick="filterByGenre(18)">Drama</button>
+    <button onclick="filterByGenre(27)">Horror</button>
+    <button onclick="filterByGenre(16)">Animation</button>
+  </div>
 
   <section class="hero">
     <h2>Streaming Gratis Film Box Office!</h2>
@@ -183,10 +234,15 @@
     const container = document.querySelector('.movies');
     const searchInput = document.getElementById('searchInput');
 
-    async function fetchMovies(query = '') {
-      const url = query
-        ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=id-ID&query=${encodeURIComponent(query)}`
-        : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID&page=1`;
+    async function fetchMovies(query = '', genre = '') {
+      let url = '';
+      if (query) {
+        url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=id-ID&query=${encodeURIComponent(query)}`;
+      } else if (genre) {
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre}&language=id-ID`;
+      } else {
+        url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID&page=1`;
+      }
 
       const res = await fetch(url);
       const data = await res.json();
@@ -234,6 +290,10 @@
 
     function closeModal() {
       document.getElementById('modal').style.display = 'none';
+    }
+
+    function filterByGenre(id) {
+      fetchMovies('', id);
     }
 
     searchInput.addEventListener('keyup', (e) => {
