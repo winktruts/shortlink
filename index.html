@@ -1,8 +1,9 @@
+<!-- index.html (versi final dengan proxy API) -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RaiMovie - Nonton Film Gratis</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,37 +13,14 @@
       color: white;
     }
     header {
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
       text-align: center;
-      padding: 40px 20px;
-      position: relative;
+      padding: 20px;
     }
-    header::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 1;
-    }
-    header h1,
-    header p {
-      position: relative;
-      z-index: 2;
-    }
-    header h1 {
-      font-size: 2.5em;
-      margin-bottom: 0.3em;
-    }
-    header p {
-      font-size: 1.1em;
-    }
+    header h1 { font-size: 2.5em; }
+    header p { font-size: 1.1em; }
     .slideshow {
-      display: none; /* disabled because background now is dynamic */
+      display: none;
     }
     .genres {
       text-align: center;
@@ -59,17 +37,13 @@
       cursor: pointer;
       transition: 0.3s;
     }
-    .genres button:hover {
-      background: #ff416c;
-    }
+    .genres button:hover { background: #ff416c; }
     .hero {
       text-align: center;
       background: #111;
       padding: 30px 10px;
     }
-    .hero h2 {
-      font-size: 2em;
-    }
+    .hero h2 { font-size: 2em; }
     .section {
       padding: 30px 15px;
       max-width: 1100px;
@@ -99,13 +73,8 @@
       transition: transform 0.3s ease;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     }
-    .movie:hover {
-      transform: scale(1.05);
-    }
-    .movie img {
-      width: 100%;
-      display: block;
-    }
+    .movie:hover { transform: scale(1.05); }
+    .movie img { width: 100%; display: block; }
     .movie h3 {
       text-align: center;
       padding: 10px;
@@ -126,15 +95,9 @@
       font-size: 0.85em;
       text-decoration: none;
     }
-    .btn-alt {
-      background: #00c896;
-    }
-    .btn-trailer {
-      background: #1e90ff;
-    }
-    .btn:hover {
-      opacity: 0.9;
-    }
+    .btn-alt { background: #00c896; }
+    .btn-trailer { background: #1e90ff; }
+    .btn:hover { opacity: 0.9; }
     footer {
       background: #111;
       text-align: center;
@@ -161,12 +124,6 @@
       width: 90%;
       position: relative;
     }
-    .modal-content h2 {
-      margin-bottom: 10px;
-    }
-    .modal-content p {
-      margin-bottom: 10px;
-    }
     .close-btn {
       position: absolute;
       top: 10px;
@@ -183,7 +140,7 @@
   </style>
 </head>
 <body>
-  <header id="header">
+  <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
   </header>
@@ -209,7 +166,7 @@
   </section>
 
   <div class="modal" id="modal">
-    <div class="modal-content" id="modalContent">
+    <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <h2 id="modalTitle"></h2>
       <p id="modalOverview"></p>
@@ -223,28 +180,18 @@
   </footer>
 
   <script>
-    const API_KEY = '0affa794699e653a183d25ecfe0d078d';
     const container = document.querySelector('.movies');
     const searchInput = document.getElementById('searchInput');
 
     async function fetchMovies(query = '', genre = '') {
-      let url = '';
-      if (query) {
-        url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=id-ID&query=${encodeURIComponent(query)}`;
-      } else if (genre) {
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre}&language=id-ID`;
-      } else {
-        url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID&page=1`;
-      }
-
+      const url = `/api/movies${query ? `?query=${encodeURIComponent(query)}` : genre ? `?genre=${genre}` : ''}`;
       const res = await fetch(url);
       const data = await res.json();
       container.innerHTML = '';
+
       const movies = data.results.slice(0, 12);
-
       for (const movie of movies) {
-        const trailerUrl = await fetchTrailerUrl(movie.id);
-
+        const trailerUrl = await fetch(`/api/trailer?id=${movie.id}`).then(r => r.text());
         const movieEl = document.createElement('div');
         movieEl.className = 'movie';
         movieEl.innerHTML = `
@@ -261,19 +208,9 @@
       }
     }
 
-    async function fetchTrailerUrl(movieId) {
-      const url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-      return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
-    }
-
     async function showDetails(movieId) {
-      const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=id-ID`;
-      const res = await fetch(url);
+      const res = await fetch(`/api/details?id=${movieId}`);
       const data = await res.json();
-
       document.getElementById('modalTitle').innerText = data.title;
       document.getElementById('modalOverview').innerText = data.overview;
       document.getElementById('modalRating').innerText = data.vote_average;
@@ -289,25 +226,11 @@
       fetchMovies('', id);
     }
 
-    searchInput.addEventListener('keyup', (e) => {
-      const query = e.target.value.trim();
-      fetchMovies(query);
+    searchInput.addEventListener('keyup', e => {
+      fetchMovies(e.target.value.trim());
     });
 
     fetchMovies();
-
-    // Set dynamic header background
-    async function setDynamicHeader() {
-      const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=id-ID&page=1`);
-      const data = await res.json();
-      const latest = data.results[0];
-      if (latest && latest.backdrop_path) {
-        const header = document.getElementById('header');
-        header.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${latest.backdrop_path}')`;
-      }
-    }
-
-    setDynamicHeader();
   </script>
 </body>
 </html>
