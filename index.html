@@ -3,32 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watch Your Favorite Movies Online | RaiMovie</title>
+  <title>RaiMovie - Nonton Film Gratis</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(#0d0d0d, #1a1a1a);
+      background: #0d0d0d;
       color: white;
-      line-height: 1.6;
     }
     header {
-      text-align: center;
       background: linear-gradient(to right, #ff416c, #ff4b2b);
+      text-align: center;
+      padding: 20px;
     }
     header h1 {
       font-size: 2.5em;
-      padding: 20px;
     }
     header p {
       font-size: 1.1em;
-      padding-bottom: 10px;
     }
     .slideshow {
       width: 100%;
       overflow: hidden;
+      height: 250px;
       position: relative;
-      height: 300px;
     }
     .slides {
       display: flex;
@@ -38,7 +36,7 @@
     }
     .slides img {
       width: 100vw;
-      height: 100%;
+      height: 250px;
       object-fit: cover;
     }
     @keyframes slide {
@@ -50,33 +48,32 @@
     .genres {
       text-align: center;
       padding: 15px;
+      flex-wrap: wrap;
     }
     .genres button {
-      background: #333;
+      background: #444;
       color: white;
       border: none;
       margin: 5px;
-      padding: 10px 20px;
+      padding: 10px 15px;
       border-radius: 20px;
       cursor: pointer;
+      transition: 0.3s;
     }
     .genres button:hover {
       background: #ff416c;
     }
     .hero {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      height: 200px;
       background: #111;
+      padding: 30px 10px;
     }
     .hero h2 {
-      font-size: 3em;
+      font-size: 2em;
     }
     .section {
-      padding: 40px 20px;
-      max-width: 1000px;
+      padding: 30px 15px;
+      max-width: 1100px;
       margin: auto;
     }
     .search-bar {
@@ -85,7 +82,8 @@
     }
     .search-bar input {
       padding: 10px;
-      width: 60%;
+      width: 90%;
+      max-width: 500px;
       border-radius: 5px;
       border: none;
       font-size: 1em;
@@ -96,11 +94,11 @@
       gap: 20px;
     }
     .movie {
-      background: #2a2a2a;
+      background: #1e1e1e;
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
-      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     }
     .movie:hover {
       transform: scale(1.05);
@@ -117,17 +115,17 @@
     .buttons {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 8px;
       flex-wrap: wrap;
+      padding: 10px;
     }
     .btn {
       background: #ff416c;
       color: white;
-      padding: 8px 14px;
-      border-radius: 20px;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 0.85em;
       text-decoration: none;
-      font-size: 0.9em;
     }
     .btn-alt {
       background: #00c896;
@@ -147,8 +145,7 @@
     }
     .modal {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100vw;
       height: 100vh;
       background: rgba(0, 0, 0, 0.8);
@@ -163,7 +160,6 @@
       border-radius: 10px;
       max-width: 600px;
       width: 90%;
-      text-align: left;
       position: relative;
     }
     .modal-content h2 {
@@ -179,6 +175,11 @@
       font-size: 20px;
       color: white;
       cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8em; }
+      .hero h2 { font-size: 1.5em; }
+      .movie h3 { font-size: 0.9em; }
     }
   </style>
 </head>
@@ -247,7 +248,7 @@
       const res = await fetch(url);
       const data = await res.json();
       container.innerHTML = '';
-      const movies = data.results.slice(0, 8);
+      const movies = data.results.slice(0, 12);
 
       for (const movie of movies) {
         const trailerUrl = await fetchTrailerUrl(movie.id);
