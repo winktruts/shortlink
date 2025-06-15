@@ -1,4 +1,4 @@
-<!-- index.html (dengan background dinamis & deteksi AdBlock) -->
+<!-- index.html (fix AdBlock false positive detection) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -158,7 +158,7 @@
   </style>
 </head>
 <body>
-  <div id="adsbait" style="display:none">adsbygoogle</div>
+  <div id="adsbait" style="height:1px;width:1px;position:absolute;left:-999px;">adsbygoogle</div>
 
   <header>
     <h1>RaiMovie</h1>
@@ -248,12 +248,9 @@
 
     async function setDynamicBackground() {
       try {
-        console.log('Mengambil background dinamis...');
         const res = await fetch('/api/movies');
         const data = await res.json();
         const latest = data.results[0];
-        console.log('Hasil:', latest);
-
         if (latest && latest.backdrop_path) {
           document.body.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
@@ -273,7 +270,7 @@
 
     function detectAdBlock() {
       const bait = document.getElementById('adsbait');
-      if (bait && getComputedStyle(bait).display === 'none') {
+      if (!bait || bait.offsetHeight === 0) {
         const alertBox = document.createElement('div');
         alertBox.innerHTML = `
           <div style="
