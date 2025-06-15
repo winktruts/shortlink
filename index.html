@@ -1,4 +1,4 @@
-<!-- index.html (dengan fix background dinamis dan log debug) -->
+<!-- index.html (dengan background dinamis & deteksi AdBlock) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -158,7 +158,8 @@
   </style>
 </head>
 <body>
-  <script type='text/javascript' src='//pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js'></script>
+  <div id="adsbait" style="display:none">adsbygoogle</div>
+
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
@@ -270,9 +271,35 @@
       }
     }
 
+    function detectAdBlock() {
+      const bait = document.getElementById('adsbait');
+      if (bait && getComputedStyle(bait).display === 'none') {
+        const alertBox = document.createElement('div');
+        alertBox.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ff4b2b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1em;
+            z-index: 9999;
+          ">
+            🚫 Kami mendeteksi kamu menggunakan AdBlock.<br>
+            Mohon matikan AdBlock agar website tetap berjalan dengan baik 🙏
+          </div>
+        `;
+        document.body.appendChild(alertBox);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       fetchMovies();
       setDynamicBackground();
+      detectAdBlock();
     });
   </script>
 </body>
