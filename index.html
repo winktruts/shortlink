@@ -64,6 +64,7 @@
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
+      cursor: pointer;
     }
     .movie:hover {
       transform: scale(1.05);
@@ -108,6 +109,41 @@
       font-size: 0.9em;
       color: #ccc;
     }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      text-align: left;
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-bottom: 10px;
+    }
+    .modal-content p {
+      margin-bottom: 10px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +163,16 @@
     <h2 style="text-align:center; margin-bottom: 20px;">Rekomendasi Hari Ini</h2>
     <div class="movies"></div>
   </section>
+
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modalContent">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalOverview"></p>
+      <p><strong>Rating:</strong> <span id="modalRating"></span></p>
+      <p><strong>Genres:</strong> <span id="modalGenres"></span></p>
+    </div>
+  </div>
 
   <footer>
     &copy; 2025 RaiMovie. All Rights Reserved.
@@ -161,6 +207,7 @@
             ${trailerUrl ? `<a href="${trailerUrl}" target="_blank" class="btn btn-trailer">▶ Trailer</a>` : ''}
           </div>
         `;
+        movieEl.addEventListener('click', () => showDetails(movie.id));
         container.appendChild(movieEl);
       }
     }
@@ -171,6 +218,22 @@
       const data = await res.json();
       const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
       return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
+    }
+
+    async function showDetails(movieId) {
+      const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=id-ID`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      document.getElementById('modalTitle').innerText = data.title;
+      document.getElementById('modalOverview').innerText = data.overview;
+      document.getElementById('modalRating').innerText = data.vote_average;
+      document.getElementById('modalGenres').innerText = data.genres.map(g => g.name).join(', ');
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
     }
 
     searchInput.addEventListener('keyup', (e) => {
