@@ -1,90 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RaiMovie - Nonton Film Gratis</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0d0d0d;
+      margin: 0;
+      background: linear-gradient(to right, #141e30, #243b55);
       color: white;
+      text-align: center;
     }
     header {
+      padding: 2em 1em;
       background: linear-gradient(to right, #ff416c, #ff4b2b);
-      text-align: center;
-      padding: 20px;
-      position: relative;
     }
     header h1 {
       font-size: 2.5em;
+      margin-bottom: 0.3em;
     }
     header p {
-      font-size: 1.1em;
+      font-size: 1.2em;
     }
-    .slideshow {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .slides {
+    .movie-search {
+      margin: 2em auto;
+      max-width: 600px;
       display: flex;
-      transition: transform 0.5s ease-in-out;
+      flex-direction: column;
+      gap: 10px;
     }
-    .slides img {
-      width: 100vw;
-      height: 250px;
-      object-fit: cover;
-    }
-    .slide-nav {
-      position: absolute;
-      top: 50%;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      transform: translateY(-50%);
-    }
-    .slide-nav button {
-      background: rgba(0,0,0,0.5);
-      border: none;
-      color: white;
-      font-size: 2em;
+    input[type="text"] {
       padding: 10px;
-      cursor: pointer;
-    }
-    .slideshow-controls {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-    }
-    .slideshow-controls button {
-      background: #fff;
-      color: #000;
-      padding: 5px 10px;
+      font-size: 1em;
       border: none;
-      margin-left: 5px;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      background: #ff416c;
+      color: white;
+      border-radius: 5px;
       cursor: pointer;
     }
-    .dots {
-      text-align: center;
-      position: absolute;
-      bottom: 15px;
+    #results {
+      margin: 2em auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      max-width: 1000px;
+    }
+    .movie-card {
+      background: #1e1e2f;
+      border-radius: 10px;
+      padding: 10px;
+      width: 180px;
+    }
+    .movie-card img {
       width: 100%;
+      border-radius: 5px;
     }
-    .dot {
-      height: 12px;
-      width: 12px;
-      margin: 0 5px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
-      cursor: pointer;
-    }
-    .dot.active {
-      background-color: #fff;
+    .movie-card h3 {
+      font-size: 1em;
+      margin: 0.5em 0 0.2em;
     }
   </style>
 </head>
@@ -92,83 +73,45 @@
   <header>
     <h1>RaiMovie</h1>
     <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
-    <div class="slideshow" id="slideshow">
-      <div class="slides" id="slides">
-        <img src="https://image.tmdb.org/t/p/original/8YFL5QQVPy3AgrEQxNYVSgiPEbe.jpg" alt="Slide 1">
-        <img src="https://image.tmdb.org/t/p/original/wgT0TS6Dd4tNA1xFHMgZDfF0iCw.jpg" alt="Slide 2">
-        <img src="https://image.tmdb.org/t/p/original/rSPw7tgCH9c6NqICZef4kZjFOQ5.jpg" alt="Slide 3">
-      </div>
-      <div class="slide-nav">
-        <button onclick="prevSlide()">&#10094;</button>
-        <button onclick="nextSlide()">&#10095;</button>
-      </div>
-      <div class="slideshow-controls">
-        <button onclick="pauseSlide()">⏸ Pause</button>
-        <button onclick="playSlide()">▶ Play</button>
-      </div>
-      <div class="dots" id="dots"></div>
-    </div>
   </header>
-  <!-- existing content remains unchanged -->
+
+  <div class="movie-search">
+    <input type="text" id="search" placeholder="Cari film..." />
+    <button onclick="searchMovie()">🔍 Cari</button>
+  </div>
+
+  <div id="results"></div>
+
   <script>
-    let currentIndex = 0;
-    let slides = document.getElementById('slides');
-    let totalSlides = slides.children.length;
-    let autoSlide = setInterval(() => nextSlide(), 5000);
-    let dotsContainer = document.getElementById('dots');
+    const API_KEY = '0affa794699e653a183d25ecfe0d078d';
 
-    for (let i = 0; i < totalSlides; i++) {
-      let dot = document.createElement('span');
-      dot.classList.add('dot');
-      dot.addEventListener('click', () => {
-        currentIndex = i;
-        showSlide(currentIndex);
+    async function searchMovie() {
+      const query = document.getElementById('search').value;
+      const response = await fetch(
+        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+      displayResults(data.results);
+    }
+
+    function displayResults(movies) {
+      const results = document.getElementById('results');
+      results.innerHTML = '';
+      if (!movies.length) {
+        results.innerHTML = '<p>Film tidak ditemukan.</p>';
+        return;
+      }
+      movies.forEach((movie) => {
+        const div = document.createElement('div');
+        div.className = 'movie-card';
+        div.innerHTML = `
+          <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
+          <h3>${movie.title}</h3>
+          <p>${movie.release_date}</p>
+        `;
+        results.appendChild(div);
       });
-      dotsContainer.appendChild(dot);
     }
-
-    function updateDots() {
-      const dots = document.querySelectorAll('.dot');
-      dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentIndex);
-      });
-    }
-
-    function showSlide(index) {
-      slides.style.transform = `translateX(-${index * 100}vw)`;
-      updateDots();
-    }
-
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      showSlide(currentIndex);
-    }
-
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      showSlide(currentIndex);
-    }
-
-    function pauseSlide() {
-      clearInterval(autoSlide);
-    }
-
-    function playSlide() {
-      autoSlide = setInterval(() => nextSlide(), 5000);
-    }
-
-    // Swipe gesture support
-    let startX = 0;
-    document.getElementById('slideshow').addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-    });
-    document.getElementById('slideshow').addEventListener('touchend', e => {
-      let endX = e.changedTouches[0].clientX;
-      if (startX - endX > 50) nextSlide();
-      if (endX - startX > 50) prevSlide();
-    });
-
-    showSlide(currentIndex);
   </script>
 </body>
 </html>
