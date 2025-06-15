@@ -1,71 +1,184 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>raibotlook bio-link</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Your Favorite Movies Online | RaiMovie</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(#0d0d0d, #1a1a1a);
+      color: white;
+      line-height: 1.6;
+    }
+    header {
+      padding: 30px 20px;
+      text-align: center;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    header p {
+      font-size: 1.1em;
+    }
+    .hero {
+      background: url('https://images.unsplash.com/photo-1606312616780-8fdfa5e43433?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+      height: 60vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #ff6ec4, #7873f5, #42e695, #f9d423);
-      background-size: 400% 400%;
-      animation: gradient 15s ease infinite;
-      color: white;
       text-align: center;
+    }
+    .hero h2 {
+      font-size: 3em;
+      background: rgba(0, 0, 0, 0.5);
       padding: 20px;
+      border-radius: 10px;
     }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
     }
-
-    h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    .search-bar {
+      text-align: center;
+      margin-bottom: 30px;
     }
-
-    .btn {
-      background: white;
-      color: #333;
-      padding: 15px 30px;
-      margin: 10px 0;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-      display: inline-block;
+    .search-bar input {
+      padding: 10px;
+      width: 60%;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
     }
-
-    .btn:hover {
+    .movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .movie {
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .movie:hover {
       transform: scale(1.05);
     }
-
-    footer {
-      margin-top: 40px;
+    .movie img {
+      width: 100%;
+      display: block;
+    }
+    .movie h3 {
+      text-align: center;
+      padding: 10px;
+      font-size: 1em;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #ff416c;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      text-decoration: none;
       font-size: 0.9em;
-      opacity: 0.8;
+    }
+    .btn-alt {
+      background: #00c896;
+    }
+    .btn-trailer {
+      background: #1e90ff;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    footer {
+      background: #111;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>Klik Link Di Bawah Ini Untuk Info Menarik!</h1>
-  
-  <a class="btn" href="https://www.profitableratecpm.com/hk68cccn2?key=3afd55eed6781c064cb17069870e7f22" target="_blank" rel="noopener noreferrer">
-    Lihat Sekarang
-  </a>
+  <header>
+    <h1>RaiMovie</h1>
+    <p>Nonton film terbaru tanpa iklan dan tanpa ribet</p>
+  </header>
+
+  <section class="hero">
+    <h2>Streaming Gratis Film Box Office!</h2>
+  </section>
+
+  <section class="section">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Cari film favoritmu...">
+    </div>
+    <h2 style="text-align:center; margin-bottom: 20px;">Rekomendasi Hari Ini</h2>
+    <div class="movies"></div>
+  </section>
 
   <footer>
-    Powered by raibotlook.com
+    &copy; 2025 RaiMovie. All Rights Reserved.
   </footer>
+
+  <script>
+    const API_KEY = '0affa794699e653a183d25ecfe0d078d';
+    const container = document.querySelector('.movies');
+    const searchInput = document.getElementById('searchInput');
+
+    async function fetchMovies(query = '') {
+      const url = query
+        ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=id-ID&query=${encodeURIComponent(query)}`
+        : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID&page=1`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      container.innerHTML = '';
+      const movies = data.results.slice(0, 8);
+
+      for (const movie of movies) {
+        const trailerUrl = await fetchTrailerUrl(movie.id);
+
+        const movieEl = document.createElement('div');
+        movieEl.className = 'movie';
+        movieEl.innerHTML = `
+          <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+          <h3>${movie.title}</h3>
+          <div class="buttons">
+            <a href="#" class="btn">🎬 Nonton</a>
+            <a href="#" class="btn btn-alt">📥 Download</a>
+            ${trailerUrl ? `<a href="${trailerUrl}" target="_blank" class="btn btn-trailer">▶ Trailer</a>` : ''}
+          </div>
+        `;
+        container.appendChild(movieEl);
+      }
+    }
+
+    async function fetchTrailerUrl(movieId) {
+      const url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+      return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
+    }
+
+    searchInput.addEventListener('keyup', (e) => {
+      const query = e.target.value.trim();
+      fetchMovies(query);
+    });
+
+    fetchMovies();
+  </script>
 </body>
 </html>
