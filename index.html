@@ -1,4 +1,4 @@
-<!-- index.html (popup iklan saat klik pertama) -->
+<!-- index.html (dengan fix background dinamis dan log debug) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -247,9 +247,12 @@
 
     async function setDynamicBackground() {
       try {
+        console.log('Mengambil background dinamis...');
         const res = await fetch('/api/movies');
         const data = await res.json();
         const latest = data.results[0];
+        console.log('Hasil:', latest);
+
         if (latest && latest.backdrop_path) {
           document.body.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
@@ -267,23 +270,9 @@
       }
     }
 
-    function openAdPopup() {
-      const adWindow = window.open(
-        'https://www.profitableratecpm.com/hk68cccn2?key=3afd55eed6781c064cb17069870e7f22',
-        '_blank',
-        'width=800,height=600'
-      );
-      if (adWindow) adWindow.blur();
-      window.focus();
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       fetchMovies();
       setDynamicBackground();
-      document.body.addEventListener('click', function handleClickOnce() {
-        openAdPopup();
-        document.body.removeEventListener('click', handleClickOnce);
-      });
     });
   </script>
 </body>
