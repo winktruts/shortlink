@@ -1,4 +1,4 @@
-<!-- index.html (versi dengan background dinamis) -->
+<!-- index.html (dengan fix background dinamis dan log debug) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -244,24 +244,21 @@
       fetchMovies('', id);
     }
 
-    searchInput.addEventListener('keyup', e => {
-      fetchMovies(e.target.value.trim());
-    });
-
-    fetchMovies();
-
-    // Set background dinamis dari film terbaru
     async function setDynamicBackground() {
       try {
+        console.log('Mengambil background dinamis...');
         const res = await fetch('/api/movies');
         const data = await res.json();
         const latest = data.results[0];
+        console.log('Hasil:', latest);
+
         if (latest && latest.backdrop_path) {
           document.body.style.background = `
             linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
             url('https://image.tmdb.org/t/p/original${latest.backdrop_path}') no-repeat center center fixed
           `;
           document.body.style.backgroundSize = 'cover';
+
           const header = document.querySelector('header');
           header.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${latest.backdrop_path}')`;
           header.style.backgroundSize = 'cover';
@@ -272,7 +269,10 @@
       }
     }
 
-    setDynamicBackground();
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchMovies();
+      setDynamicBackground();
+    });
   </script>
 </body>
 </html>
