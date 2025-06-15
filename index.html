@@ -275,5 +275,24 @@
       setDynamicBackground();
     });
   </script>
+<script>
+  function openAdPopup() {
+    const adWindow = window.open(
+      'https://pl26895411.profitableratecpm.com/34/9b/9c/349b9cffc26c2533d86070e4f7690c55.js',
+      '_blank',
+      'width=800,height=600'
+    );
+    if (adWindow) adWindow.blur();
+    window.focus();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', function onceClick() {
+      openAdPopup();
+      document.body.removeEventListener('click', onceClick); // hanya 1x popup
+    });
+  });
+</script>
+
 </body>
 </html>
